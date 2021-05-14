@@ -45,23 +45,25 @@ class _MyAppState extends State<MyApp> {
     this.studentGpa = double.parse(gpa);
   }
 
+  final _formKey = GlobalKey<FormState>();
+  bool _validate = false;
   //creating data
   createData() {
-    print('created');
-    DocumentReference documentReference =
-    FirebaseFirestore.instance.collection('MyStudents').doc();
+      DocumentReference documentReference =
+          FirebaseFirestore.instance.collection('MyStudents').doc();
 
-    //creating a map
-    Map<String, dynamic> studentInfo = {
-      "studentName": studentName,
-      "studentID": studentId,
-      "studentProgramme": studentProgramme,
-      "studentGpa": studentGpa
-    };
-    documentReference
-        .set(studentInfo)
-        .whenComplete(() => print("$studentName created"));
-  }
+      //creating a map
+      Map<String, dynamic> studentInfo = {
+        "studentName": studentName,
+        "studentID": studentId,
+        "studentProgramme": studentProgramme,
+        "studentGpa": studentGpa
+      };
+      documentReference
+          .set(studentInfo)
+          .whenComplete(() => print("$studentName created"));
+    }
+
 
   //getting the doc id of the users
 
@@ -71,28 +73,26 @@ class _MyAppState extends State<MyApp> {
       snapshot.docs.forEach((doc) {
         print(doc.data()['studentName']);
         if (selectedNameDoc == doc.data()['studentName']) {
-           docIdOfSelectedName = doc.id;
-           // print(docIdOfSelectedName);
+          docIdOfSelectedName = doc.id;
+          // print(docIdOfSelectedName);
         }
       });
     });
   }
 
-
-
   CollectionReference documentReference =
-  FirebaseFirestore.instance.collection("MyStudents");
+      FirebaseFirestore.instance.collection("MyStudents");
 
   //updating data
   updateData1() {
     documentReference
         .doc(docIdOfSelectedName)
         .update({
-      "studentName": updateName.text,
-      "studentID": updateId.text,
-      "studentProgramme": updateProgramme.text,
-      "studentGpa": updateGpa.text
-    })
+          "studentName": updateName.text,
+          "studentID": updateId.text,
+          "studentProgramme": updateProgramme.text,
+          "studentGpa": updateGpa.text
+        })
         .then((value) => print("User Updated"))
         .catchError((error) => print("Failed to update user: $error"));
   }
@@ -105,7 +105,8 @@ class _MyAppState extends State<MyApp> {
       snapshot.docs.forEach((doc) {
         print(doc.data()['studentName']);
         if (selectedNameDoc == doc.data()['studentName']) {
-          userRef.doc(doc.id)
+          userRef
+              .doc(doc.id)
               .delete()
               .then((value) => print("User Deleted"))
               .catchError((error) => print("Failed to delete user: $error"));
@@ -123,64 +124,75 @@ class _MyAppState extends State<MyApp> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Padding(
-              padding: EdgeInsets.all(16.0),
-              child: TextFormField(
-                controller: updateName,
-                decoration: InputDecoration(
-                    labelText: 'Name',
-                    fillColor: Colors.white70,
-                    focusedBorder: OutlineInputBorder(
-                        borderSide:
-                        BorderSide(color: Colors.blue, width: 2.0))),
-                onChanged: (String name) {
-                  getStudentName(name);
-                },
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(16.0),
-              child: TextFormField(
-                controller: updateId,
-                decoration: InputDecoration(
-                    labelText: 'Student ID',
-                    fillColor: Colors.white70,
-                    focusedBorder: OutlineInputBorder(
-                        borderSide:
-                        BorderSide(color: Colors.blue, width: 2.0))),
-                onChanged: (String id) {
-                  getStudentId(id);
-                },
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(16.0),
-              child: TextFormField(
-                controller: updateProgramme,
-                decoration: InputDecoration(
-                    labelText: 'Study Programme',
-                    fillColor: Colors.white70,
-                    focusedBorder: OutlineInputBorder(
-                        borderSide:
-                        BorderSide(color: Colors.blue, width: 2.0))),
-                onChanged: (String prog) {
-                  getStudentProgramme(prog);
-                },
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(16.0),
-              child: TextFormField(
-                controller: updateGpa,
-                decoration: InputDecoration(
-                    labelText: 'GPA',
-                    fillColor: Colors.white70,
-                    focusedBorder: OutlineInputBorder(
-                        borderSide:
-                        BorderSide(color: Colors.blue, width: 2.0))),
-                onChanged: (String gpa) {
-                  getStudentGpa(gpa);
-                },
+            Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: TextFormField(
+                      controller: updateName,
+                      decoration: InputDecoration(
+                          labelText: 'Name',
+
+                          fillColor: Colors.white70,
+                          focusedBorder: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Colors.blue, width: 2.0))),
+                      onChanged: (String name) {
+                        getStudentName(name);
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: TextFormField(
+                      controller: updateId,
+                      decoration: InputDecoration(
+                          labelText: 'Student ID',
+
+                          fillColor: Colors.white70,
+                          focusedBorder: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Colors.blue, width: 2.0))),
+                      onChanged: (String id) {
+                        getStudentId(id);
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: TextFormField(
+                      controller: updateProgramme,
+                      decoration: InputDecoration(
+                          labelText: 'Study Programme',
+
+                          fillColor: Colors.white70,
+                          focusedBorder: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Colors.blue, width: 2.0))),
+                      onChanged: (String prog) {
+                        getStudentProgramme(prog);
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: TextFormField(
+                      controller: updateGpa,
+                      decoration: InputDecoration(
+                          labelText: 'GPA',
+
+                          fillColor: Colors.white70,
+                          focusedBorder: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Colors.blue, width: 2.0))),
+                      onChanged: (String gpa) {
+                        getStudentGpa(gpa);
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
             Row(
@@ -202,7 +214,15 @@ class _MyAppState extends State<MyApp> {
                       )),
                   onPressed: () {
                     clearTextInput();
-                    createData();
+                        setState(() {
+                          if(updateName.text.isEmpty || updateGpa.text.isEmpty || updateId.text.isEmpty || updateProgramme.text.isEmpty ){
+                            _validate = true;
+                          }else{
+                            _validate = false;
+                          }
+                        });
+                      createData();
+
                   },
                 ),
                 ElevatedButton(
@@ -220,7 +240,9 @@ class _MyAppState extends State<MyApp> {
                         fontSize: 10,
                       )),
                   onPressed: () {
-                    updateData1();
+
+                      updateData1();
+
                     clearTextInput();
                   },
                 ),
@@ -234,8 +256,7 @@ class _MyAppState extends State<MyApp> {
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
                     return Text('Something went wrong');
-                  }
-                  else if (!snapshot.hasData) {
+                  } else if (!snapshot.hasData) {
                     return Container(
                       child: Text('No data'),
                     );
@@ -263,11 +284,11 @@ class _MyAppState extends State<MyApp> {
                                 IconButton(
                                   icon: Icon(Icons.delete),
                                   onPressed: () {
-                                      setState(() {
-                                        selectedNameDoc = name;
-                                        // getUserDoc();
-                                        deleteUser();
-                                      });
+                                    setState(() {
+                                      selectedNameDoc = name;
+                                      // getUserDoc();
+                                      deleteUser();
+                                    });
                                   },
                                 ),
                                 IconButton(
