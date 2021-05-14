@@ -11,6 +11,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String studentName, studentId, studentProgramme, docIdOfSelectedName;
   double studentGpa;
+  String selectedNameDoc;
 
   //controller
 
@@ -27,7 +28,7 @@ class _MyAppState extends State<MyApp> {
     updateId.clear();
   }
 
-  //helper functions(getter fucntion)
+  //helper functions(getter function)
   getStudentName(name) {
     this.studentName = name;
   }
@@ -70,13 +71,15 @@ class _MyAppState extends State<MyApp> {
       snapshot.docs.forEach((doc) {
         print(doc.data()['studentName']);
         if (selectedNameDoc == doc.data()['studentName']) {
-          docIdOfSelectedName = doc.id;
+           docIdOfSelectedName = doc.id;
+           // print(docIdOfSelectedName);
         }
       });
     });
   }
 
-  String selectedNameDoc;
+
+
   CollectionReference documentReference =
   FirebaseFirestore.instance.collection("MyStudents");
 
@@ -95,13 +98,20 @@ class _MyAppState extends State<MyApp> {
   }
 
   //deleting data
-  deleteData(name) {
-    DocumentReference documentReference =
-    FirebaseFirestore.instance.collection('MyStudents').doc(name);
 
-    documentReference
-        .delete()
-        .whenComplete(() => print("$studentName deleted"));
+  Future<DocumentReference> deleteUser() async {
+    final userRef = FirebaseFirestore.instance.collection("MyStudents");
+    userRef.get().then((QuerySnapshot snapshot) {
+      snapshot.docs.forEach((doc) {
+        print(doc.data()['studentName']);
+        if (selectedNameDoc == doc.data()['studentName']) {
+          userRef.doc(doc.id)
+              .delete()
+              .then((value) => print("User Deleted"))
+              .catchError((error) => print("Failed to delete user: $error"));
+        }
+      });
+    });
   }
 
   @override
@@ -253,7 +263,11 @@ class _MyAppState extends State<MyApp> {
                                 IconButton(
                                   icon: Icon(Icons.delete),
                                   onPressed: () {
-                                    deleteData(name);
+                                      setState(() {
+                                        selectedNameDoc = name;
+                                        // getUserDoc();
+                                        deleteUser();
+                                      });
                                   },
                                 ),
                                 IconButton(
